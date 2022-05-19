@@ -1,0 +1,12 @@
+$background: lightgray;
+
+$primary: #1B191C;
+$secondary: #D92434;
+
+body {
+background-color: $background;
+    
+}
+
+
+@import "~bootstrap/scss/bootstrap";
