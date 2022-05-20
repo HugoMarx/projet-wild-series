@@ -22,6 +22,10 @@ class Program
     #[ORM\Column(type: 'string', length: 255)]
     private $poster;
 
+    #[ORM\ManyToOne(targetEntity: categorie::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $categorie;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +63,18 @@ class Program
     public function setPoster(string $poster): self
     {
         $this->poster = $poster;
+
+        return $this;
+    }
+
+    public function getCategorie(): ?categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?categorie $categorie): self
+    {
+        $this->categorie = $categorie;
 
         return $this;
     }
