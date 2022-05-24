@@ -22,7 +22,7 @@ class Program
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $poster;
 
-    #[ORM\ManyToOne(targetEntity: categorie::class)]
+    #[ORM\ManyToOne(targetEntity: Categorie::class)]
     #[ORM\JoinColumn(nullable: false)]
     private $categorie;
 
@@ -67,12 +67,12 @@ class Program
         return $this;
     }
 
-    public function getCategorie(): ?categorie
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
-    public function setCategorie(?categorie $categorie): self
+    public function setCategorie(?Categorie $categorie): self
     {
         $this->categorie = $categorie;
 

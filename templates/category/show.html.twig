@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categories : {{category}} {% endblock %}
+
+{% block body %}
+
+{% if categoryResults is not empty %}
+<h1>Disponible dans la catégorie {{category}} :</h1>
+<ul>
+{% for item in categoryResults %}
+    <li><h2>#{{item.id}} {{item.title}}</h2> <p>{{item.synopsis}}</p>
+    <a href="{{ path("program_show", {id : item.id}) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
+    </li>
+{% endfor %}
+
+</ul> {% else %}
+    <h1>Aucune série disponible dans cette catégorie !</h1>
+{% endif %}
+{% endblock %}
