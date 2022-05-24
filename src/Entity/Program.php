@@ -19,7 +19,7 @@ class Program
     #[ORM\Column(type: 'text', nullable: true)]
     private $synopsis;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $poster;
 
     #[ORM\ManyToOne(targetEntity: categorie::class)]
