@@ -6,21 +6,21 @@ use App\Entity\Episode;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
+        $faker = Factory::create();
 
-        for ($i = 1; $i <= 200; $i++) {
+        for ($i = 1; $i <= 5000; $i++) {
 
             $episode = new Episode();
-            $episode->setSeason($this->getReference('season_'. rand(1, 10)));
-            $episode->setTitle('Title_'. $i);
-            $episode->setNumber($i);
-            $episode->setSynopsis('Description ' . $i);
+            $episode->setSeason($this->getReference('season_'. $faker->numberBetween(1, 500)));
+            $episode->setTitle($faker->words(rand(2, 6), true));
+            $episode->setNumber($faker->numberBetween(1, 25));
+            $episode->setSynopsis($faker->paragraph(3));
             $manager->persist($episode);
         }
 

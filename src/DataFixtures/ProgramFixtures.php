@@ -6,27 +6,27 @@ use App\Entity\Program;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class ProgramFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
-
-        for ($i = 1; $i <= 10 ; $i++) {
+        $faker = Factory::create('fr_FR');
+        
+        for ($i = 1; $i <= 100; $i++) {
             $program = new Program();
-            $program->setTitle('Program_' . $i);
-            $program->setSynopsis('Description_' . $i);
+            $program->setTitle($faker->name());
+            $program->setSynopsis($faker->realText($maxNbChars = 200, $indexSize = 2));
             $program->setCategorie($this->getReference('category_' . CategoryFixtures::CATEGORIES[rand(0, 8)]));
-            $this->addReference('program_'.$i, $program);
+            $this->addReference('program_' . $i, $program);
             $manager->persist($program);
         }
 
         $manager->flush();
     }
 
-   /* public function getDependencies()
+    /* public function getDependencies()
     {
         // Tu retournes ici toutes les classes de fixtures dont ProgramFixtures dépend
         return [

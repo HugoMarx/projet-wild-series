@@ -6,23 +6,26 @@ use App\Entity\Season;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Faker\Factory;
 
 class SeasonFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
-        for ($i = 1; $i <= 40; $i++) {
+
+        $faker = Factory::create('fr_FR');
+
+        for ($i = 1; $i <= 500; $i++) {
 
             $season = new Season();
-            $season->setProgram($this->getReference('program_'. rand(1, 10)));
-            $season->setNumber(rand(1, 12));
-            $season->setYear(rand(1990, 2022));
-            $season->setDescription('Description ' . $i);
+            $season->setNumber($faker->numberBetween(1, 10));
+            $season->setYear($faker->year());
+            $season->setDescription($faker->paragraphs(3, true));
+            $season->setProgram($this->getReference('program_' . $faker->numberBetween(1, 100)));
+
             $manager->persist($season);
 
-            $this->addReference('season_'. $i, $season);
+            $this->addReference('season_' . $i, $season);
         }
 
         $manager->flush();
