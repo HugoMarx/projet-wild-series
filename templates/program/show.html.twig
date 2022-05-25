@@ -3,12 +3,19 @@
 {% block title %}Série #{{ program.id }}{% endblock %}
 
 {% block body %}
+{{dump(seasons)}}
     <div class="media">
         <img class="align-self-start mr-3" src="{{program.poster}}" alt="{{ program.title }} poster">
         <div class="media-body">
             <h1 class="mt-0">{{ program.title }}</h1>
             <p>{{ program.synopsis }}</p>
             <p>Catégorie : {{ program.categorie.name }}</p>
+            <p>saison(s) disponibles : 
+            <ul>
+             {% for item in seasons %}
+                <li><a href='{{ path("program_season_show", { programId : program.id, seasonId : item.id })}}'>Saison {{item.number}}</a></li>
+            {% endfor %}</ul></p>
+           
         </div>
     </div>
 
