@@ -12,12 +12,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoryController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(CategorieRepository $categorieRepository): Response
+    public function index(CategorieRepository $categorieRepository, ProgramRepository $programRepository): Response
     {
         $categories = $categorieRepository->findAll();
+        $itemByCategory = [];
+        
+       foreach($categories as $item){
+            $itemByCategory[$item->getName()] = count($item->getPrograms());
+        }
 
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
+            'itemByCategory' => $itemByCategory
         ]);
     }
 

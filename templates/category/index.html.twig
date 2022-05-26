@@ -9,11 +9,16 @@
 
 	<ul>
 		{% for category in categories %}
+
+		{% set type = category.name %}
+
 			<li>
-				<h2>{{category.name}}</h2>
-				<a href="{{ path("category_show", { categoryName: category.name }) }}">
-					<button type="button" class="btn-sm btn-dark">Voir</button>
-				</a>
+				<div class='d-flex m-3 gap-3 align-items-center'>
+					<h2>{{category.name}}</h2><span>({{ attribute(itemByCategory, category.name)}})</span>
+					<a href="{{ path("category_show", { categoryName: category.name }) }}">
+						<button type="button" class="btn-sm btn-dark">Voir</button>
+					</a>
+				</div>
 			</li>
 		{% endfor %}
 	</ul>
