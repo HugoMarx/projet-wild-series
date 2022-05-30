@@ -15,7 +15,7 @@ class Season
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: program::class, inversedBy: 'seasons')]
+    #[ORM\ManyToOne(targetEntity: Program::class, inversedBy: 'seasons')]
     private $program;
 
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -35,12 +35,12 @@ class Season
         $this->episodes = new ArrayCollection();
     }
 
-    public function getProgram(): ?program
+    public function getProgram(): ?Program
     {
         return $this->program;
     }
 
-    public function setProgram(?program $program): self
+    public function setProgram(?Program $program): self
     {
         $this->program = $program;
 
