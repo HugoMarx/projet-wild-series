@@ -6,12 +6,13 @@
 
 {% block body %}
 
-<div class='my-5 col-6 mx-auto'>
-    {{form_start(form)}} 
-    {{form_widget(form)}}
-    <div class="text-end"><input  class= 'btn-secondary btn-lg' type="submit" value='Ajouter la série'></div>
-    {{form_end(form)}}
-</div>
+	<div class='my-5 col-6 mx-auto'>
+		{{form_start(form, {'attr': {'novalidate': 'novalidate'}})}}
+		{{form_widget(form)}}
+		<div class="text-end"><input class='btn-secondary btn-lg' type="submit" value='Ajouter la série'></div>
+		{{form_end(form)}}
+		{{ form_errors(form) }}
+	</div>
 
 	<div class="text-center">
 		<a href="{{path("program_index")}}">
