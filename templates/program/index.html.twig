@@ -20,7 +20,7 @@
 				- Catégorie :
 				{{ program.categorie.name }}</h2>
 			<p>{{ program.synopsis }}</p>
-			<a href="{{ path("program_show", { id: program.id }) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
+			<a href="{{ path("program_show", { slug: program.slug }) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
 		</div>
 	{% else %}
 		Aucune série trouvée.

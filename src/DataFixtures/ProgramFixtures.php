@@ -7,9 +7,18 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use App\Service\Slugify;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
+
+    private Slugify $slugify;
+
+    public function __construct(Slugify $slugify)
+    {
+        $this->slugify = $slugify;
+    }
+    
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('en_EN');
@@ -22,6 +31,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
             $program->setYear($faker->year());
             $program->setCountry($faker->countryCode());
             $program->setCategorie($this->getReference('category_' . CategoryFixtures::CATEGORIES[rand(0, 8)]));
+            $program->setSlug($this->slugify->generate($program->getTitle()));
             $this->addReference('program_' . $i, $program);
             $manager->persist($program);
         }
