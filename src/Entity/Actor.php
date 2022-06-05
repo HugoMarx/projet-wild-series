@@ -61,6 +61,11 @@ class Actor
         return $this;
     }
 
+    public function getFullname(): ?string {
+        $fullName = $this->getFirstname() .' '. $this->getLastname();
+        return $fullName;
+    }
+
     public function getBirthDate(): ?string
     {
         return $this->birth_date;
