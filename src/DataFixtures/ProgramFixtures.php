@@ -8,12 +8,12 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class ProgramFixtures extends Fixture
+class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('en_EN');
-        
+
         for ($i = 1; $i <= 100; $i++) {
             $program = new Program();
             $program->setTitle($faker->name());
@@ -29,11 +29,11 @@ class ProgramFixtures extends Fixture
         $manager->flush();
     }
 
-    /* public function getDependencies()
+    public function getDependencies()
     {
         // Tu retournes ici toutes les classes de fixtures dont ProgramFixtures dépend
         return [
-          
+            CategoryFixtures::class,
         ];
-    }*/
+    }
 }
