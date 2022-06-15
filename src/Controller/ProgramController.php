@@ -13,6 +13,10 @@ use App\Service\Slugify;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -30,23 +34,38 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/new', name: 'new')]
-    public function new(Request $request, ProgramRepository $programRepository, Slugify $slugify)
+    public function new(Request $request, ProgramRepository $programRepository, Slugify $slugify, MailerInterface $mailer)
     {
         $program = new Program();
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugify->generate($program->getTitle());
             $program->setSlug($slug);
             $programRepository->add($program, true);
+
+            $email = (new TemplatedEmail())
+                ->from('wilder@wildcodeschool.com')
+                ->to(new Address('your_email@example.com', 'Hugo'))
+                ->subject('Une nouvelle série vient d\'être publiée !')
+                // path of the Twig template to render
+                ->htmlTemplate('program/newProgramEmail.html.twig')
+
+                // pass variables (name => value) to the template
+                ->context([
+                    'program' => $program,
+                ]);
+
+            $mailer->send($email);
 
             return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
         }
 
 
         return $this->renderForm('program/new.html.twig', [
-            'form' => $form]);
+            'form' => $form
+        ]);
     }
 
 

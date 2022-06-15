@@ -9,7 +9,7 @@
 <ul>
 {% for item in categoryResults %}
     <li><h2>#{{item.id}} {{item.title}}</h2> <p>{{item.synopsis}}</p>
-    <a href="{{ path("program_show", {id : item.id}) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
+    <a href="{{ path("program_show", {slug : item.slug}) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
     </li>
 {% endfor %}
 

@@ -1,0 +1,39 @@
+
+{% extends "email/_layout.html.twig" %}
+
+
+{% block body %}
+{% apply inline_css %}
+
+<style>
+
+	
+	body{
+        font-family: 'Verdana', sans-serif;
+    }
+
+    div{
+        width: 60vw;
+        margin: auto;
+    }
+</style>
+
+	<div>
+        <h1>Bonjour
+            {{ email.toName }}, une nouvelle série a été ajoutée !</h1>
+        Voici les info concernant cette nouvelle entrée :
+        <ul>
+            <li>Titre :
+                 {{program.title}}</li>
+            <li>Année: {{program.year}}
+            </li>
+            <li>Type: {{program.categorie.name}}
+            </li>
+            <li>Synopsis: {{program.synopsis}}
+            </li>
+        </ul>
+    </div>
+    {% endapply %}
+{% endblock %}
+
+
