@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
+use App\Entity\Comment;
 use App\Form\ProgramType;
 use App\Repository\EpisodeRepository;
 use App\Repository\ProgramRepository;
@@ -18,7 +19,11 @@ use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use App\Form\CommentType;
+use App\Repository\CommentRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -88,12 +93,11 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/{program}/seasons/{season}', name: 'season_show')]
+    #[Route('/{slug}/seasons/{season}', name: 'season_show')]
     public function showSeason(
         Program $program,
         Season $season,
         EpisodeRepository $episodeRepository
-
     ): Response {
         $episodes = $episodeRepository->findBySeason($season, ['number' => 'ASC']);
         return $this->render('program/season_show.html.twig', [
@@ -103,13 +107,41 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/{program}/seasons/{season}/episode/{episode}', name: 'episode_show')]
-    public function showEpisode(Program $program, Season $season, Episode $episode)
-    {
+
+    /** @var \App\Entity\User $user */
+    #[Route('/{slug}/seasons/{season}/episode/{episode_slug}', name: 'episode_show')]
+    #[Entity('episode', expr: 'repository.findBySlug(episode_slug)')]
+    #[ParamConverter('episode', options: ['mapping' => ['episode_slug' => 'slug']])]
+    public function showEpisode(
+        Program $program,
+        Season $season,
+        Episode $episode,
+        CommentRepository $commentRepository,
+        Request $request,
+        EntityManagerInterface $manager,
+    ) {
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment);
+        $commentForm->handleRequest($request);
+
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            $comment->setAuthor($this->getUser());
+            $comment->setEpisodeId($episode);
+            $commentRepository->add($commentForm->getData());
+            $manager->persist($comment);
+            $manager->flush();
+
+        }
+
+        $comments = $commentRepository->findByEpisodeId($episode, ['id' => 'DESC']);
+      
         return $this->render('program/episode_show.html.twig', [
             'program' => $program,
             'season' => $season,
-            'episode' => $episode
+            'episode' => $episode,
+            'form' => $commentForm->createView(),
+            'comments' => $comments
+
         ]);
     }
 }

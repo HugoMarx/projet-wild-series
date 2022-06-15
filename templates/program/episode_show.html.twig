@@ -1,16 +1,50 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Episode #{{ episode.number }}{% endblock %}
+{% block title %}Episode #{{ episode.number }}
+{% endblock %}
 
 {% block body %}
 
-<h1>Informations sur l'épisode #{{episode.number}} de {{program.title}}</h1>
-<p>Saison {{season.number}}</p>
-<p>Synopsis : {{episode.synopsis}}</p>
-<p>Première diffusion : {{season.year}}</p>
+	<h1>Informations sur l'épisode #{{episode.number}}
+		de
+		{{program.title}}</h1>
+	<p>Saison
+		{{season.number}}</p>
+	<p>Synopsis :
+		{{episode.synopsis}}</p>
+	<p>Première diffusion :
+		{{season.year}}</p>
 
-<a href="{{path("program_season_show", {program: program.id, season: season.id})}}">
-				<button class='btn-secondary btn-sm'>Retour</button>
-			</a>
-  
+	<a href="{{path("program_season_show", {slug: program.slug, season: season.id})}}">
+		<button class='btn-secondary btn-sm'>Retour</button>
+	</a>
+	{% if comments is empty %}
+		<div class="card">
+			<div class="card-body">
+				<h2 class='fs-5 text-muted text-center'>Aucun commentaire</h2>
+			</div>
+		</div>
+	{% else %}
+		{% for comment in comments %}
+			<div class="card my-3">
+				<div class="card-body">
+					<div class='d-flex justify-content-between'><span>{{comment.author.email}}</span>
+						<span>{{comment.rate}}/5</span></div>
+					<div>{{comment.comment}}</div>
+				</div>
+			</div>
+		{% endfor %}
+
+	{% endif %}
+	{% if app.user is not null %}
+		<div class="col-8 m-auto">
+			<h3 class='text-center'>Ajouter un commentaire</h3>
+			{{form_start(form)}}
+			{{ form_row(form.comment, {'label': 'Commentaire'}) }}
+			<div class="col-8 m-auto d-flex justify-content-center flex-row">{{ form_row(form.rate, {'label': 'Note'}) }}</div>
+			<div class='text-center'>{{ form_row(form.submit, {'label': 'Envoyer'}) }}</div>
+			{{form_end(form)}}
+		</div>
+
+	{% endif %}
 {% endblock %}

@@ -1,23 +1,35 @@
+<nav class="navbar navbar-dark bg-primary py-4 px-5">
+	<div class="d-flex gap-3">
+		<a href="{{path("app_index")}}">
+			<button class='btn-secondary btn-sm'>Home</button>
+		</a>
+		<a href="{{path("program_index")}}">
+			<button class='btn-secondary btn-sm'>Program</button>
+		</a>
+		<a href="{{path("category_index")}}">
+			<button class='btn-secondary btn-sm'>Categories</button>
+		</a>
+		<a href="{{path("app_season_index")}}">
+			<button class='btn-secondary btn-sm'>Seasons</button>
+		</a>
+		<a href="{{path("app_episode_index")}}">
+			<button class='btn-secondary btn-sm'>Episodes</button>
+		</a>
+		<a href="{{path("app_actor_index")}}">
+			<button class='btn-secondary btn-sm'>Acteurs</button>
+		</a>
 
-<nav class="navbar navbar-dark bg-primary py-4 px-5" >
-		<div class="d-flex gap-3">
-			<a href="{{path("app_index")}}">
-				<button class='btn-secondary btn-sm'>Home</button>
+
+		{% if app.user %}
+			{{ app.user.email }}
+			<a href="{{ path('app_logout') }}">
+				<button class='btn-secondary btn-sm'>Logout</button>
 			</a>
-			<a href="{{path("program_index")}}">
-				<button class='btn-secondary btn-sm'>Program</button>
+		{% else %}
+			<a href="{{ path('app_login') }}">
+				<button class='btn-secondary btn-sm'>Login</button>
 			</a>
-			<a href="{{path("category_index")}}">
-				<button class='btn-secondary btn-sm'>Categories</button>
-			</a>
-			<a href="{{path("app_season_index")}}">
-				<button class='btn-secondary btn-sm'>Seasons</button>
-			</a>
-			<a href="{{path("app_episode_index")}}">
-				<button class='btn-secondary btn-sm'>Episodes</button>
-			</a>
-			<a href="{{path("app_actor_index")}}">
-				<button class='btn-secondary btn-sm'>Acteurs</button>
-			</a>
-		</div>
+		{% endif %}
+
+	</div>
 </nav>
