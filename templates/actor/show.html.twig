@@ -8,6 +8,12 @@
 
 	<table class="table">
 		<tbody>
+			{% if actor.image is not empty %}
+				<tr>
+					<th>Photo</th>
+					<td><img src="{{ vich_uploader_asset(actor) }}" alt="" width='200px'></td>
+				</tr>
+			{% endif %}
 			<tr>
 				<th>Id</th>
 				<td>{{ actor.id }}</td>
@@ -27,13 +33,14 @@
 			<tr>
 				<th>Participation</th>
 				<td>
-                <ul>
-                    {% for program in actor.programs %}
-                    <a href="{{path('program_show', {slug: program.slug})}}">
-                        <li>{{program.title}}</li>
-                    </a>
-                    {% endfor %}
-                </ul></td>
+					<ul>
+						{% for program in actor.programs %}
+							<a href="{{path('program_show', {slug: program.slug})}}">
+								<li>{{program.title}}</li>
+							</a>
+						{% endfor %}
+					</ul>
+				</td>
 
 
 			</tr>
