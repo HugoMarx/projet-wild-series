@@ -38,7 +38,7 @@ class Actor
     #[Assert\File(
         maxSize: '2M',
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp'])]
-    private File $imageFile;
+    private ?File $imageFile = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;

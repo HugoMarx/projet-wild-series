@@ -41,7 +41,7 @@ class Program
         maxSize: '2M',
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
     )]
-    private File $posterFile;
+    private ?File $posterFile = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $updatedAt = null;
@@ -50,7 +50,7 @@ class Program
     #[ORM\JoinColumn(nullable: false)]
     private $categorie;
 
-    #[ORM\OneToMany(mappedBy: 'program', targetEntity: Season::class)]
+    #[ORM\OneToMany(mappedBy: 'program', targetEntity: Season::class, orphanRemoval: true)]
     private $seasons;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -105,7 +105,7 @@ class Program
         return $this->poster;
     }
 
-    public function setPoster(string $poster): self
+    public function setPoster(string $poster = null): self
     {
         $this->poster = $poster;
 

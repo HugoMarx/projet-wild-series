@@ -24,13 +24,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(ProgramRepository $programRepository): Response
+    public function index(ProgramRepository $programRepository, Session $session,): Response
     {
+        dump($session->getFlashBag());
         $programs = $programRepository->findAll();
         return $this->render('program/index.html.twig', [
             'website' => 'Wild Series',
@@ -45,11 +48,12 @@ class ProgramController extends AbstractController
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugify->generate($program->getTitle());
             $program->setSlug($slug);
             $programRepository->add($program, true);
-
+            $this->addFlash('success', 'Nouvelle série enregistrée avec succès !');
             $email = (new TemplatedEmail())
                 ->from('wilder@wildcodeschool.com')
                 ->to(new Address('your_email@example.com', 'Hugo'))
@@ -73,6 +77,16 @@ class ProgramController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Program $program, ProgramRepository $programRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
+            $programRepository->remove($program, true);
+            $this->addFlash('danger', 'Série supprimée avec succès');
+        }
+
+        return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+    }
 
     #[Route('/show/{slug}', name: 'show')]
     public function show(Program $program, SeasonRepository $seasonRepository): Response
@@ -130,11 +144,10 @@ class ProgramController extends AbstractController
             $commentRepository->add($commentForm->getData());
             $manager->persist($comment);
             $manager->flush();
-
         }
 
         $comments = $commentRepository->findByEpisodeId($episode, ['id' => 'DESC']);
-      
+
         return $this->render('program/episode_show.html.twig', [
             'program' => $program,
             'season' => $season,
