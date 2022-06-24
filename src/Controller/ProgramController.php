@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,7 +23,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 #[Route('/program', name: 'program_')]
@@ -80,7 +78,7 @@ class ProgramController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Program $program, ProgramRepository $programRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $program->getId(), $request->request->get('_token'))) {
             $programRepository->remove($program, true);
             $this->addFlash('danger', 'Série supprimée avec succès');
         }
@@ -156,5 +154,23 @@ class ProgramController extends AbstractController
             'comments' => $comments
 
         ]);
+    }
+
+    #[Route('/{id}/watchlist', name: 'watchlist_add')]
+    public function addToWatchlist(Program $program, EntityManagerInterface $manager)
+    {
+        $user = $this->getUser();
+
+        if($user->isInWatchlist($program)){
+            $user->removeFromWatchlist($program);
+        } else {
+            $user->addToWatchlist($program);
+        }
+        $manager->flush();
+        
+        return $this->redirectToRoute(
+            'program_show',
+            ['slug' => $program->getSlug()]
+        );
     }
 }

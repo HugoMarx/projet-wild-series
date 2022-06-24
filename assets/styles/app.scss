@@ -8,4 +8,13 @@ background-color: $background;
     
 }
 
+i{
+    font-size: 130%;
+}
+
+.bi-suit-heart-fill{
+    color: $secondary;
+}
+
 @import "~bootstrap/scss/bootstrap";
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css");
