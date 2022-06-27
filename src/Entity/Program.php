@@ -68,6 +68,9 @@ class Program
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'watchlist')]
     private $viewers;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'ownedPrograms')]
+    private $owner;
+
 
     public function __construct()
     {
@@ -280,6 +283,18 @@ class Program
         if ($this->viewers->removeElement($viewer)) {
             $viewer->removeFromWatchlist($this);
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

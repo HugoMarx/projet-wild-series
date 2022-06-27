@@ -32,6 +32,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
             $program->setCountry($faker->countryCode());
             $program->setCategorie($this->getReference('category_' . CategoryFixtures::CATEGORIES[rand(0, 8)]));
             $program->setSlug($this->slugify->generate($program->getTitle()));
+            $program->setUpdatedAt(new \DateTime('now'));
             $this->addReference('program_' . $i, $program);
             $manager->persist($program);
         }

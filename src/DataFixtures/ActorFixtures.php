@@ -24,6 +24,7 @@ class ActorFixtures extends Fixture implements DependentFixtureInterface
             $actor->setFirstname($faker->firstName());
             $actor->setLastname($faker->lastName());
             $actor->setBirthDate($faker->date());
+            $actor->setCreatedAt(new \DateTimeImmutable('now'));
 
             $actor->addProgram($this->getReference('program_' . rand(1, 100)));
             $actor->addProgram($this->getReference('program_' . rand(1, 100)));

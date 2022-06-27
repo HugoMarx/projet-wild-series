@@ -24,6 +24,8 @@ use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -50,6 +52,8 @@ class ProgramController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugify->generate($program->getTitle());
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
+            $program->setUpdatedAt(new \DateTimeImmutable('now'));
             $programRepository->add($program, true);
             $this->addFlash('success', 'Nouvelle série enregistrée avec succès !');
             $email = (new TemplatedEmail())
@@ -156,12 +160,28 @@ class ProgramController extends AbstractController
         ]);
     }
 
+    #[Security("is_granted('ROLE_ADMIN') and is_granted('ROLE_CONTRIBUTOR')")]
+    #[Route('/comment/delete/{id}', name: 'comment_delete')]
+    public function deleteComment(CommentRepository $commentRepository, Comment $comment): Response
+    {
+        $episode = $comment->getEpisodeId();
+        $commentRepository->remove($comment, true);
+        return $this->redirectToRoute(
+            'program_episode_show',
+            [
+                'episode_slug' => $episode->getSlug(),
+                'season' => $episode->getSeason()->getId(),
+                'slug' => $episode->getSeason()->getProgram()->getSlug()
+            ]
+        );
+    }
+
     #[Route('/{id}/watchlist', name: 'watchlist_add')]
     public function addToWatchlist(Program $program, EntityManagerInterface $manager)
     {
         $user = $this->getUser();
 
-        if($user->isInWatchlist($program)){
+        if ($user->isInWatchlist($program)) {
             $user->removeFromWatchlist($program);
         } else {
             $user->addToWatchlist($program);
@@ -171,5 +191,29 @@ class ProgramController extends AbstractController
         return $this->json(
             ['isInWatchlist' => $user->isInWatchlist($program)]
         );
+    }
+
+
+    #[Route('/{slug}/edit', name: 'edit')]
+    public function programEdit(Program $program, ProgramRepository $programRepository, Request $request)
+    {
+
+        if ($this->getUser() !== $program->getOwner()) {
+            throw new AccessDeniedException('Only the owner can edit the program!');
+        }
+
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $programRepository->add($program, true);
+
+            return $this->redirectToRoute('program_show', ['slug' => $program->getSlug()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
+            'program' => $program,
+            'form' => $form,
+        ]);
     }
 }

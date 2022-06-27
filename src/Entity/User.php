@@ -31,7 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class, orphanRemoval: true)]
     private $comments;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $username;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -41,11 +41,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable(name: 'watchlist')]
     private $watchlist;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Program::class)]
+    private $ownedPrograms;
+
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->watchlist = new ArrayCollection();
+        $this->ownedPrograms = new ArrayCollection();
     }
 
 
@@ -203,5 +207,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return Collection<int, Program>
+     */
+    public function getOwnedPrograms(): Collection
+    {
+        return $this->ownedPrograms;
+    }
+
+    public function addOwnedProgram(Program $ownedProgram): self
+    {
+        if (!$this->ownedPrograms->contains($ownedProgram)) {
+            $this->ownedPrograms[] = $ownedProgram;
+            $ownedProgram->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedProgram(Program $ownedProgram): self
+    {
+        if ($this->ownedPrograms->removeElement($ownedProgram)) {
+            // set the owning side to null (unless already changed)
+            if ($ownedProgram->getOwner() === $this) {
+                $ownedProgram->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }
