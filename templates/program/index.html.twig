@@ -5,26 +5,58 @@
 {% endblock %}
 
 {% block body %}
-	<div class="d-flex align-items-center">
-		<h1>Toutes les séries de la table program :
-		</h1>
-			<a href="{{path("program_new")}}">
-					<button class='btn-secondary btn mx-3'>Ajouter une série</button>
-				</a>
+
+	<div class="col-3">
+		{{form_start(form)}}
+		{{form_widget(form)}}
+		{{form_end(form)}}
 	</div>
-	{% for program in programs %}
-		<div>
-			<h2>{{ loop.index }}
-				/
-				{{ program.title }}
+
+	{% if results is defined %}
+
+		<h3>Resultat de votre recherche :</h3>
+
+
+		{% for result in results %}
+			<div>
+				<h2>{{ result.title }}</h2>
 				- Catégorie :
-				{{ program.categorie.name }}</h2>
-			<p>{{ program.synopsis }}</p>
-			<a href="{{ path("program_show", { slug: program.slug }) }}"><button type="button" class="btn-sm btn-dark">Voir la fiche</button></a>
-		</div>
+				{{ result.categorie.name }}
+				<p>{{ result.synopsis }}</p>
+				<a href="{{ path("program_show", { slug: result.slug }) }}">
+					<button type="button" class="btn-sm btn-dark">Voir la fiche</button>
+				</a>
+			</div>
+		{% endfor %}
+
+
 	{% else %}
-		Aucune série trouvée.
-	{% endfor %}
+
+		<div class="d-flex align-items-center">
+			<h1>Toutes les séries de la table program :
+			</h1>
+			<a href="{{path("program_new")}}">
+				<button class='btn-secondary btn mx-3'>Ajouter une série</button>
+			</a>
+		</div>
+		{% for program in programs %}
+			<div>
+				<h2>{{ loop.index }}
+					/
+					{{ program.title }}
+					- Catégorie :
+					{{ program.categorie.name }}</h2>
+				<p>{{ program.synopsis }}</p>
+				<a href="{{ path("program_show", { slug: program.slug }) }}">
+					<button type="button" class="btn-sm btn-dark">Voir la fiche</button>
+				</a>
+			</div>
+		{% else %}
+			Aucune série trouvée.
+		{% endfor %}
+
+	{% endif %}
+
 
 	<a href="{{ path('program_index') }}">
 		Retour à l'accueil

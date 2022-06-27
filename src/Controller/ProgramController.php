@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Form\CommentType;
+use App\Form\SearchProgramType;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -31,13 +32,28 @@ use Symfony\Component\Security\Core\Security;
 class ProgramController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(ProgramRepository $programRepository, Session $session,): Response
+    public function index(ProgramRepository $programRepository, Request $request): Response
     {
-        dump($session->getFlashBag());
+        $form = $this->createForm(SearchProgramType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted()){
+            $search = $form->getData()['search'];
+            $result = $programRepository->findLikeName($search);
+            if(!empty($result)){
+                dump($result);
+                return $this->render('program/index.html.twig', [
+                    'website' => 'Wild Series',
+                    'results' => $result,
+                    'form' => $form->createView()
+                ]);
+            }
+        }
+
         $programs = $programRepository->findAll();
         return $this->render('program/index.html.twig', [
             'website' => 'Wild Series',
-            'programs' => $programs
+            'programs' => $programs,
+            'form' => $form->createView()
         ]);
     }
 
